@@ -1,248 +1,96 @@
- #include <SoftwareSerial.h>
+#include <SoftwareSerial.h>
 
-SoftwareSerial BT(0, 1); //TX, RX respetively
-String readvoice;
+SoftwareSerial BT(10, 11); //TX, RX respetively
+String readdata;
+int motorLpin1=2;
+int motorLpin2=3;
+int motorRpin1=4;
+int motorRpin2=5;
+int motorLpwm=10;
+int motorRpwm=11;
+
+int motorSpeed=125;
+int turn=50;
 
 void setup() {
- BT.begin(9600);
- Serial.begin(9600);
-  pinMode(4, OUTPUT);
-  pinMode(3, OUTPUT);
-  pinMode(5, OUTPUT);
-  pinMode(6, OUTPUT);
-
+  Serial.begin(9600);
+  Serial.flush();
+  pinMode(motorLpin1,OUTPUT);
+  pinMode(motorLpin2,OUTPUT);
+  pinMode(motorRpin1,OUTPUT);
+  pinMode(motorRpin2,OUTPUT);
+  pinMode(motorLpwm,OUTPUT);
+  pinMode(motorRpwm,OUTPUT);
 }
-//-----------------------------------------------------------------------// 
+
 void loop() {
-  while (BT.available()){  //Check if there is an available byte to read
-  delay(10); //Delay added to make thing stable
-  char c = BT.read(); //Conduct a serial read
-  readvoice += c; //build the string- "forward", "reverse", "left" and "right"
-  } 
-  if (readvoice.length() > 0) {
-    Serial.println(readvoice);
-
-  if(readvoice == "*forward#")
-  {
-    digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(100);
+  String input="";
+  while(Serial.available()){
+    input+=(char)Serial.read();
+    delay(5);
   }
-
-  else if(readvoice == "*back#")
-  {
-    digitalWrite(3, LOW);
-    digitalWrite(4, LOW);
-    digitalWrite(5, HIGH);
-    digitalWrite(6,HIGH);
-    delay(100);
-  }
-
-  else if (readvoice == "*left#")
-  {
-    digitalWrite (3,HIGH);
-    digitalWrite (4,LOW);
-    digitalWrite (5,LOW);
-    digitalWrite (6,LOW);
-   delay (800);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(100);
   
+  if(input=="forward"){
+    fwd();
   }
+  else if(input=="stop"){
+    stp();
+  }
+  else if(input=="backward"){
+    rev();
+  }
+  else if(input.indexOf("left")>-1){
+    lft();
+  }
+  else if(input.indexOf("right")>-1){
+    rght();
+  }
+  else if(input!=""){
+    motorSpeed=input.toInt();
+  }
+}
 
- else if ( readvoice == "*right#")
- {
-   digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (800);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(100);
- }
+void fwd(){
+  analogWrite(motorLpwm,motorSpeed);
+  analogWrite(motorRpwm,motorSpeed);
+  digitalWrite(motorLpin1,1);
+  digitalWrite(motorLpin2,0);
+  digitalWrite(motorRpin1,1);
+  digitalWrite(motorRpin2,0);
+}
 
- else if (readvoice == "*stop#")
- {
-   digitalWrite (3, LOW);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (100);
- }
- else if (readvoice == "*keep watch in all direction#")
- {
-   digitalWrite (3, HIGH);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (100);
- }
-  else if (readvoice == "*show me Garba#")
- {
- digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (400);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(600);
-    digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, HIGH);
-   digitalWrite (6, LOW);
-   delay (500);
-   digitalWrite (3, HIGH);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, HIGH);
-   delay (500);
+void rev(){
+  analogWrite(motorLpwm,motorSpeed);
+  analogWrite(motorRpwm,motorSpeed);
+  digitalWrite(motorLpin1,0);
+  digitalWrite(motorLpin2,1);
+  digitalWrite(motorRpin1,0);
+  digitalWrite(motorRpin2,1);
+}
 
-digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (400);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(600);
-    digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, HIGH);
-   digitalWrite (6, LOW);
-   delay (500);
-   digitalWrite (3, HIGH);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, HIGH);
-   delay (500);digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (400);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(600);
-    digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, HIGH);
-   digitalWrite (6, LOW);
-   delay (500);
-   digitalWrite (3, HIGH);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, HIGH);
-   delay (500);digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (400);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(600);
-    digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, HIGH);
-   digitalWrite (6, LOW);
-   delay (500);
-   digitalWrite (3, HIGH);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, HIGH);
-   delay (500);digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (400);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(600);
-    digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, HIGH);
-   digitalWrite (6, LOW);
-   delay (500);
-   digitalWrite (3, HIGH);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, HIGH);
-   delay (500);digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (400);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(600);
-    digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, HIGH);
-   digitalWrite (6, LOW);
-   delay (500);
-   digitalWrite (3, HIGH);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, HIGH);
-   delay (500);digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (400);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(600);
-    digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, HIGH);
-   digitalWrite (6, LOW);
-   delay (500);
-   digitalWrite (3, HIGH);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, HIGH);
-   delay (500);digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, LOW);
-   digitalWrite (6, LOW);
-   delay (400);
-      digitalWrite(3, HIGH);
-    digitalWrite (4, HIGH);
-    digitalWrite(5,LOW);
-    digitalWrite(6,LOW);
-    delay(600);
-    digitalWrite (3, LOW);
-   digitalWrite (4, HIGH);
-   digitalWrite (5, HIGH);
-   digitalWrite (6, LOW);
-   delay (500);
-   digitalWrite (3, HIGH);
-   digitalWrite (4, LOW);
-   digitalWrite (5, LOW);
-   digitalWrite (6, HIGH);
-   delay (500);
- }
+void lft(){
+  analogWrite(motorLpwm,motorSpeed-turn);
+  analogWrite(motorRpwm,motorSpeed+turn);
+  digitalWrite(motorLpin1,0);
+  digitalWrite(motorLpin2,1);
+  digitalWrite(motorRpin1,1);
+  digitalWrite(motorRpin2,0);
+}
 
+void rght(){
+  analogWrite(motorLpwm,motorSpeed+turn);
+  analogWrite(motorRpwm,motorSpeed-turn);
+  digitalWrite(motorLpin1,1);
+  digitalWrite(motorLpin2,0);
+  digitalWrite(motorRpin1,0);
+  digitalWrite(motorRpin2,1);
+}
 
- readvoice="";}} //Reset the variable
+void stp(){
+  analogWrite(motorLpwm,0);
+  analogWrite(motorRpwm,0);
+  digitalWrite(motorLpin1,1);
+  digitalWrite(motorLpin2,1);
+  digitalWrite(motorRpin1,1);
+  digitalWrite(motorRpin2,1);
+}
